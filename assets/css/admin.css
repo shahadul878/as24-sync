@@ -1,0 +1,1057 @@
+/**
+ * Admin Styles for AS24 Sync
+ * 
+ * @package AS24_Sync
+ * @since 2.0.0
+ */
+
+/* Dashboard Layout */
+.as24-sync-dashboard {
+    max-width: 1200px;
+}
+
+.as24-dashboard-content {
+    margin-top: 20px;
+}
+
+/* Statistics Grid */
+.as24-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.as24-stat-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.08);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.as24-stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #2271b1 0%, #135e96 100%);
+}
+
+.as24-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.12);
+    border-color: #c3c8ce;
+}
+
+.as24-stat-label {
+    font-size: 12px;
+    color: #646970;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 500;
+}
+
+.as24-stat-value {
+    font-size: 36px;
+    font-weight: 700;
+    color: #2271b1;
+    line-height: 1.2;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.as24-stat-value.as24-error {
+    color: #d63638;
+}
+
+/* Total Listings Card with Remote/Local */
+
+
+.as24-total-listings-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 8px;
+}
+
+.as24-total-listing-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 12px;
+    background: rgba(34, 113, 177, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(34, 113, 177, 0.1);
+}
+
+.as24-total-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #646970;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.as24-total-listing-item .as24-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #2271b1;
+}
+
+@media (max-width: 768px) {
+    .as24-stat-card-total-listings {
+        grid-column: span 1;
+    }
+    
+    .as24-total-listing-item {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+    }
+}
+
+/* Progress Section */
+.as24-progress-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.08);
+}
+
+.as24-progress-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.as24-progress-wrapper {
+    margin-top: 20px;
+}
+
+.as24-progress-steps {
+    margin-bottom: 20px;
+}
+
+.as24-progress-step {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 4px solid #dcdcde;
+    background: #f6f7f7;
+    border-radius: 4px;
+}
+
+.as24-progress-step.as24-step-complete {
+    border-left-color: #00a32a;
+    background: #f0f6fc;
+}
+
+.as24-progress-step.as24-step-processing {
+    border-left-color: #2271b1;
+    background: #f0f6fc;
+    animation: pulse 2s infinite;
+}
+
+.as24-progress-step.as24-step-failed {
+    border-left-color: #d63638;
+    background: #fcf0f1;
+}
+
+.as24-progress-step.as24-step-pending {
+    border-left-color: #dcdcde;
+    background: #f6f7f7;
+    opacity: 0.6;
+}
+
+.as24-step-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 15px;
+    margin-top: 2px;
+    background: #dcdcde;
+    flex-shrink: 0;
+}
+
+.as24-step-complete .as24-step-indicator {
+    background: #00a32a;
+    position: relative;
+}
+
+.as24-step-complete .as24-step-indicator::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.as24-step-processing .as24-step-indicator {
+    background: #2271b1;
+    animation: pulse-dot 1.5s infinite;
+}
+
+.as24-step-failed .as24-step-indicator {
+    background: #d63638;
+    position: relative;
+}
+
+.as24-step-failed .as24-step-indicator::after {
+    content: '✗';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.as24-step-content {
+    flex: 1;
+}
+
+.as24-step-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #1d2327;
+}
+
+.as24-step-message {
+    font-size: 13px;
+    color: #646970;
+}
+
+/* Progress Bar */
+.as24-progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #f0f0f1;
+    border-radius: 15px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.as24-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2271b1 0%, #135e96 100%);
+    transition: width 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    position: relative;
+    min-width: 50px;
+}
+
+.as24-progress-fill .as24-progress-text {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    padding: 0 8px;
+}
+
+.as24-progress-status {
+    text-align: center;
+    font-size: 14px;
+    color: #646970;
+    font-weight: 500;
+}
+
+/* Actions Section */
+.as24-actions-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.08);
+}
+
+.as24-actions-section h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.as24-action-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.as24-action-buttons .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+
+.as24-action-buttons .button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,.15);
+}
+
+.as24-action-buttons .button-primary {
+    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+    border-color: #135e96;
+}
+
+.as24-action-buttons .button-primary:hover {
+    background: linear-gradient(135deg, #135e96 0%, #0f4c75 100%);
+}
+
+/* Status Messages */
+.as24-status-messages {
+    margin-top: 20px;
+}
+
+.as24-status-message {
+    padding: 14px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid;
+    border-radius: 6px;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.as24-status-message.success {
+    border-left-color: #00a32a;
+    background: linear-gradient(90deg, #f0f9f4 0%, #ffffff 100%);
+    color: #1d2327;
+}
+
+.as24-status-message.error {
+    border-left-color: #d63638;
+    background: linear-gradient(90deg, #fef7f7 0%, #ffffff 100%);
+    color: #1d2327;
+}
+
+.as24-status-message.info {
+    border-left-color: #2271b1;
+    background: linear-gradient(90deg, #f0f6fc 0%, #ffffff 100%);
+    color: #1d2327;
+}
+
+/* Settings Page */
+.as24-sync-settings {
+    max-width: 800px;
+}
+
+.as24-settings-content {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.as24-settings-section {
+    margin-bottom: 30px;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #dcdcde;
+}
+
+.as24-settings-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.as24-connection-status {
+    margin-left: 10px;
+    font-weight: 500;
+}
+
+.as24-connection-status.success {
+    color: #00a32a;
+}
+
+.as24-connection-status.error {
+    color: #d63638;
+}
+
+/* Animations */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes pulse-dot {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+/* Unified Activity Logs Section */
+.as24-activity-logs-section {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,.05), 0 1px 2px rgba(0,0,0,.08);
+}
+
+.as24-activity-logs-section h2 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1d2327;
+}
+
+.as24-logs-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #e1e5e9;
+    padding-bottom: 0;
+}
+
+.as24-tab-button {
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #646970;
+    transition: all 0.3s ease;
+    border-radius: 6px 6px 0 0;
+    position: relative;
+}
+
+.as24-tab-button:hover {
+    color: #2271b1;
+    background: rgba(34, 113, 177, 0.05);
+}
+
+.as24-tab-button.active {
+    color: #2271b1;
+    border-bottom-color: #2271b1;
+    background: rgba(34, 113, 177, 0.08);
+    font-weight: 600;
+}
+
+.as24-logs-controls {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 16px;
+    background: #ffffff;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+}
+
+.as24-logs-filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex: 1;
+}
+
+.as24-logs-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.as24-logs-filter {
+    min-width: 160px;
+    max-width: 220px;
+    padding: 8px 12px;
+    border: 1px solid #d0d5da;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    background: #ffffff;
+}
+
+.as24-logs-filter:focus {
+    outline: none;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 3px rgba(34, 113, 177, 0.1);
+}
+
+.as24-logs-actions label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #50575e;
+    cursor: pointer;
+    user-select: none;
+}
+
+.as24-logs-actions input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #2271b1;
+}
+
+.as24-logs-actions .button {
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+}
+
+.as24-logs-actions .button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,.15);
+}
+
+.as24-logs-actions #as24-clear-logs {
+    background: linear-gradient(135deg, #d63638 0%, #b32d2e 100%);
+    border-color: #b32d2e;
+    color: #ffffff;
+}
+
+.as24-logs-actions #as24-clear-logs:hover {
+    background: linear-gradient(135deg, #b32d2e 0%, #8a2324 100%);
+    border-color: #8a2324;
+    color: #ffffff;
+}
+
+.as24-logs-actions #as24-clear-logs:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.as24-logs-table-wrapper {
+    overflow: auto;
+    border: 1px solid #e1e5e9;
+    border-radius: 6px;
+    background: #ffffff;
+    height: 400px;
+}
+
+.as24-logs-table {
+    margin-top: 0;
+    font-size: 13px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.as24-logs-table th {
+    font-weight: 600;
+    background: linear-gradient(135deg, #f6f7f7 0%, #f0f0f1 100%);
+    padding: 14px 12px;
+    text-align: left;
+    color: #1d2327;
+    border-bottom: 2px solid #e1e5e9;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.as24-logs-table th:first-child {
+    border-top-left-radius: 6px;
+}
+
+.as24-logs-table th:last-child {
+    border-top-right-radius: 6px;
+}
+
+.as24-logs-table td {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f1;
+    vertical-align: middle;
+}
+
+.as24-logs-table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.as24-logs-table tbody tr:hover {
+    background: #f8f9fa;
+    transform: scale(1.001);
+}
+
+.as24-logs-table .column-date {
+    width: 150px;
+}
+
+.as24-logs-table .column-type {
+    width: 100px;
+}
+
+.as24-logs-table .column-status {
+    width: 120px;
+}
+
+.as24-logs-table .column-listing-id {
+    width: 120px;
+}
+
+.as24-logs-table .column-post-id {
+    width: 80px;
+}
+
+.as24-logs-table .column-processed,
+.as24-logs-table .column-imported,
+.as24-logs-table .column-updated,
+.as24-logs-table .column-errors {
+    width: 80px;
+    text-align: center;
+}
+
+.as24-logs-table .column-duration {
+    width: 100px;
+    text-align: center;
+}
+
+.as24-logs-table .column-changes {
+    width: 250px;
+    max-width: 350px;
+}
+
+.as24-logs-table .column-message {
+    width: 200px;
+}
+
+.as24-log-history {
+    background: linear-gradient(90deg, #f8f9fa 0%, #ffffff 100%);
+    border-left: 3px solid #2271b1;
+}
+
+.as24-log-history:hover {
+    background: linear-gradient(90deg, #f0f4f8 0%, #f8f9fa 100%);
+    border-left-color: #135e96;
+}
+
+.as24-log-listing {
+    background: #ffffff;
+    border-left: 3px solid transparent;
+}
+
+.as24-log-listing:hover {
+    background: #f8f9fa;
+    border-left-color: #c3c8ce;
+}
+
+/* Sync History Section (kept for backward compatibility) */
+.as24-history-section {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    border-radius: 4px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.as24-history-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.as24-history-filter {
+    min-width: 150px;
+}
+
+.as24-history-table-wrapper {
+    overflow-x: auto;
+}
+
+.as24-history-table {
+    margin-top: 0;
+}
+
+.as24-history-table th {
+    font-weight: 600;
+    background: #f6f7f7;
+}
+
+.as24-history-table .column-date {
+    width: 150px;
+}
+
+.as24-history-table .column-type {
+    width: 100px;
+}
+
+.as24-history-table .column-status {
+    width: 100px;
+}
+
+.as24-history-table .column-processed,
+.as24-history-table .column-imported,
+.as24-history-table .column-updated,
+.as24-history-table .column-errors {
+    width: 80px;
+    text-align: center;
+}
+
+.as24-history-table .column-duration {
+    width: 100px;
+    text-align: center;
+}
+
+.as24-history-table .column-message {
+    min-width: 200px;
+}
+
+.as24-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 1px 2px rgba(0,0,0,.1);
+    transition: all 0.2s ease;
+}
+
+.as24-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,.15);
+}
+
+.as24-badge-type {
+    background: linear-gradient(135deg, #f0f0f1 0%, #e5e5e5 100%);
+    color: #50575e;
+}
+
+.as24-badge-running {
+    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+    color: #fff;
+}
+
+.as24-badge-completed {
+    background: linear-gradient(135deg, #00a32a 0%, #008a20 100%);
+    color: #fff;
+}
+
+.as24-badge-stopped {
+    background: linear-gradient(135deg, #dba617 0%, #c49a0e 100%);
+    color: #fff;
+}
+
+.as24-badge-failed {
+    background: linear-gradient(135deg, #d63638 0%, #b32d2e 100%);
+    color: #fff;
+}
+
+.as24-error-count {
+    color: #ffffff;
+    background: linear-gradient(135deg, #d63638 0%, #b32d2e 100%);
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 11px;
+    display: inline-block;
+    box-shadow: 0 1px 2px rgba(214, 54, 56, 0.3);
+}
+
+.as24-no-logs {
+    text-align: center;
+    padding: 60px 20px;
+    color: #646970;
+    font-style: italic;
+    font-size: 14px;
+}
+
+.as24-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #646970;
+    font-style: italic;
+    position: relative;
+}
+
+.as24-loading::before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #e1e5e9;
+    border-top-color: #2271b1;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.dashicons.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .as24-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .as24-stat-card {
+        padding: 16px 12px;
+    }
+    
+    .as24-stat-value {
+        font-size: 28px;
+    }
+    
+    .as24-action-buttons {
+        flex-direction: column;
+    }
+    
+    .as24-action-buttons .button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .as24-logs-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .as24-tab-button {
+        flex: 1;
+        min-width: 100px;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    .as24-logs-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .as24-logs-filters {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .as24-logs-filter {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .as24-logs-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .as24-logs-table-wrapper {
+        overflow-x: scroll;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .as24-logs-table {
+        font-size: 12px;
+    }
+    
+    .as24-logs-table th,
+    .as24-logs-table td {
+        padding: 8px 6px;
+    }
+    
+    .as24-history-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .as24-history-filter {
+        width: 100%;
+    }
+}
+
+/* Real-time Logs Section (kept for backward compatibility) */
+.as24-realtime-logs-section {
+    margin-top: 30px;
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+}
+
+.as24-realtime-controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.as24-realtime-controls .as24-logs-filter {
+    flex: 1;
+    min-width: 150px;
+    max-width: 200px;
+}
+
+.as24-realtime-controls label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.as24-realtime-logs-wrapper {
+    overflow-x: auto;
+}
+
+.as24-realtime-logs-table {
+    font-size: 13px;
+}
+
+.as24-realtime-logs-table .column-time {
+    width: 100px;
+}
+
+.as24-realtime-logs-table .column-listing-id {
+    width: 150px;
+}
+
+.as24-realtime-logs-table .column-post-id {
+    width: 80px;
+}
+
+.as24-realtime-logs-table .column-action {
+    width: 100px;
+}
+
+.as24-realtime-logs-table .column-changes {
+    min-width: 300px;
+    max-width: 400px;
+}
+
+.as24-changes-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 12px;
+    list-style-type: none;
+}
+
+.as24-changes-list li {
+    margin: 6px 0;
+    line-height: 1.5;
+    padding: 4px 8px;
+    background: #f8f9fa;
+    border-left: 2px solid #2271b1;
+    border-radius: 3px;
+}
+
+.as24-changes-list li strong {
+    color: #2271b1;
+    font-weight: 600;
+}
+
+.as24-realtime-logs-table code,
+.as24-logs-table code {
+    background: linear-gradient(135deg, #f0f0f1 0%, #e5e5e5 100%);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    border: 1px solid #d0d5da;
+    color: #2271b1;
+    font-weight: 500;
+}
+
+.as24-badge-imported {
+    background-color: #00a32a;
+    color: #fff;
+}
+
+.as24-badge-updated {
+    background-color: #2271b1;
+    color: #fff;
+}
+
+.as24-badge-error {
+    background-color: #d63638;
+    color: #fff;
+}
+
+.as24-loading {
+    text-align: center;
+    padding: 20px;
+    color: #646970;
+    font-style: italic;
+}
+
+@media (max-width: 782px) {
+    .as24-realtime-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .as24-realtime-controls .as24-logs-filter {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .as24-realtime-logs-table .column-changes {
+        min-width: 200px;
+    }
+}
+
