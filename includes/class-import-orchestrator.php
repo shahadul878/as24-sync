@@ -222,6 +222,9 @@ class AS24_Import_Orchestrator {
         
         // Update last import time
         as24_sync()->update_setting('last_import', time());
+        
+        // Run comparison and auto-actions if enabled
+        self::run_post_import_comparison();
     }
     
     /**
@@ -257,6 +260,70 @@ class AS24_Import_Orchestrator {
      * 
      * @return array Import status
      */
+    /**
+     * Run comparison and auto-actions after import completes
+     * 
+     * @return void
+     */
+    private static function run_post_import_comparison() {
+        $settings = get_option('as24_sync_settings', array());
+        
+        // Check if comparison should run on import complete
+        if (!isset($settings['run_comparison_on_complete']) || !$settings['run_comparison_on_complete']) {
+            return;
+        }
+        
+        AS24_Logger::info('Running post-import comparison...', 'sync');
+        
+        // Run comparison
+        $comparison = AS24_Sync_Comparator::compare_listings();
+        
+        if (is_wp_error($comparison)) {
+            AS24_Logger::error('Post-import comparison failed: ' . $comparison->get_error_message(), 'sync');
+            return;
+        }
+        
+        // Handle orphaned listings if auto-delete is enabled
+        if (isset($settings['auto_delete_orphaned']) && $settings['auto_delete_orphaned']) {
+            if (!empty($comparison['orphaned_local'])) {
+                $action = $settings['orphaned_action'] ?? 'trash';
+                if ($action !== 'none') {
+                    AS24_Logger::info(sprintf('Auto-handling %d orphaned listings with action: %s', 
+                        count($comparison['orphaned_local']), $action), 'sync');
+                    
+                    $result = AS24_Sync_Comparator::handle_orphaned_listings(
+                        array_keys($comparison['orphaned_local']),
+                        $action
+                    );
+                    
+                    if ($result['success']) {
+                        AS24_Logger::info('Auto-handled orphaned listings: ' . $result['message'], 'sync');
+                    } else {
+                        AS24_Logger::error('Failed to auto-handle orphaned listings: ' . $result['message'], 'sync');
+                    }
+                }
+            }
+        }
+        
+        // Import missing listings if auto-import is enabled
+        if (isset($settings['auto_import_missing']) && $settings['auto_import_missing']) {
+            if (!empty($comparison['missing_remote'])) {
+                AS24_Logger::info(sprintf('Auto-importing %d missing listings', 
+                    count($comparison['missing_remote'])), 'sync');
+                
+                $result = AS24_Sync_Comparator::import_missing_listings($comparison['missing_remote']);
+                
+                if ($result['success']) {
+                    AS24_Logger::info('Auto-imported missing listings: ' . $result['message'], 'sync');
+                } else {
+                    AS24_Logger::error('Failed to auto-import missing listings: ' . $result['message'], 'sync');
+                }
+            }
+        }
+        
+        AS24_Logger::info('Post-import comparison completed', 'sync');
+    }
+    
     /**
      * Get local listings count from WordPress database
      * 

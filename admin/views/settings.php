@@ -113,6 +113,95 @@ $import_frequency = $settings['import_frequency'] ?? 'daily';
                 </table>
             </div>
             
+            <!-- Sync Comparison Settings Section -->
+            <div class="as24-settings-section">
+                <h2><?php _e('Sync Comparison Settings', 'as24-sync'); ?></h2>
+                <p class="description">
+                    <?php _e('Configure how the system handles listings that exist only locally or only remotely.', 'as24-sync'); ?>
+                </p>
+                
+                <table class="form-table">
+                    <tr>
+                        <th scope="row">
+                            <label for="auto_delete_orphaned"><?php _e('Auto-delete Orphaned Listings', 'as24-sync'); ?></label>
+                        </th>
+                        <td>
+                            <label>
+                                <input type="checkbox" 
+                                       id="auto_delete_orphaned" 
+                                       name="auto_delete_orphaned" 
+                                       value="1" 
+                                       <?php checked($settings['auto_delete_orphaned'] ?? false, true); ?>>
+                                <?php _e('Automatically handle orphaned listings (exist locally but not in remote)', 'as24-sync'); ?>
+                            </label>
+                            <p class="description">
+                                <?php _e('When enabled, orphaned listings will be automatically processed based on the action below.', 'as24-sync'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="orphaned_action"><?php _e('Action for Orphaned', 'as24-sync'); ?></label>
+                        </th>
+                        <td>
+                            <select id="orphaned_action" name="orphaned_action">
+                                <option value="trash" <?php selected($settings['orphaned_action'] ?? 'trash', 'trash'); ?>>
+                                    <?php _e('Trash', 'as24-sync'); ?>
+                                </option>
+                                <option value="draft" <?php selected($settings['orphaned_action'] ?? 'trash', 'draft'); ?>>
+                                    <?php _e('Archive (Draft)', 'as24-sync'); ?>
+                                </option>
+                                <option value="mark" <?php selected($settings['orphaned_action'] ?? 'trash', 'mark'); ?>>
+                                    <?php _e('Mark as Orphaned', 'as24-sync'); ?>
+                                </option>
+                                <option value="none" <?php selected($settings['orphaned_action'] ?? 'trash', 'none'); ?>>
+                                    <?php _e('None (Do Nothing)', 'as24-sync'); ?>
+                                </option>
+                            </select>
+                            <p class="description">
+                                <?php _e('What action to take when orphaned listings are detected.', 'as24-sync'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="auto_import_missing"><?php _e('Auto-import Missing', 'as24-sync'); ?></label>
+                        </th>
+                        <td>
+                            <label>
+                                <input type="checkbox" 
+                                       id="auto_import_missing" 
+                                       name="auto_import_missing" 
+                                       value="1" 
+                                       <?php checked($settings['auto_import_missing'] ?? false, true); ?>>
+                                <?php _e('Automatically import missing listings (exist in remote but not locally)', 'as24-sync'); ?>
+                            </label>
+                            <p class="description">
+                                <?php _e('When enabled, missing listings will be automatically imported when detected.', 'as24-sync'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">
+                            <label for="run_comparison_on_complete"><?php _e('Run Comparison on Import Complete', 'as24-sync'); ?></label>
+                        </th>
+                        <td>
+                            <label>
+                                <input type="checkbox" 
+                                       id="run_comparison_on_complete" 
+                                       name="run_comparison_on_complete" 
+                                       value="1" 
+                                       <?php checked($settings['run_comparison_on_complete'] ?? false, true); ?>>
+                                <?php _e('Automatically run comparison when import completes', 'as24-sync'); ?>
+                            </label>
+                            <p class="description">
+                                <?php _e('When enabled, the system will automatically compare local vs remote listings after each import completes.', 'as24-sync'); ?>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            
             <!-- Submit Button -->
             <p class="submit">
                 <button type="submit" class="button button-primary button-large">

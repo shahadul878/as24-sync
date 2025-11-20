@@ -24,6 +24,10 @@ class AS24_Ajax_Handler {
         add_action('wp_ajax_as24_get_sync_history', array(__CLASS__, 'ajax_get_sync_history'));
         add_action('wp_ajax_as24_get_listing_logs', array(__CLASS__, 'ajax_get_listing_logs'));
         add_action('wp_ajax_as24_clear_logs', array(__CLASS__, 'ajax_clear_logs'));
+        add_action('wp_ajax_as24_compare_listings', array(__CLASS__, 'ajax_compare_listings'));
+        add_action('wp_ajax_as24_get_sync_analysis', array(__CLASS__, 'ajax_get_sync_analysis'));
+        add_action('wp_ajax_as24_handle_orphaned', array(__CLASS__, 'ajax_handle_orphaned'));
+        add_action('wp_ajax_as24_import_missing', array(__CLASS__, 'ajax_import_missing'));
     }
     
     /**
@@ -232,6 +236,100 @@ class AS24_Ajax_Handler {
             wp_send_json_error(array(
                 'message' => __('Failed to clear logs', 'as24-sync')
             ));
+        }
+    }
+    
+    /**
+     * Compare listings (local vs remote)
+     */
+    public static function ajax_compare_listings() {
+        self::verify_request();
+        
+        $result = AS24_Sync_Comparator::compare_listings();
+        
+        if (is_wp_error($result)) {
+            wp_send_json_error(array(
+                'message' => $result->get_error_message()
+            ));
+        }
+        
+        wp_send_json_success(array(
+            'comparison' => $result,
+            'message' => __('Comparison completed successfully.', 'as24-sync')
+        ));
+    }
+    
+    /**
+     * Get cached sync analysis
+     */
+    public static function ajax_get_sync_analysis() {
+        self::verify_request();
+        
+        $cached = AS24_Sync_Comparator::get_cached_comparison();
+        
+        if ($cached === false) {
+            wp_send_json_error(array(
+                'message' => __('No comparison data available. Please run comparison first.', 'as24-sync')
+            ));
+        }
+        
+        wp_send_json_success(array(
+            'comparison' => $cached
+        ));
+    }
+    
+    /**
+     * Handle orphaned listings
+     */
+    public static function ajax_handle_orphaned() {
+        self::verify_request();
+        
+        $listing_ids = isset($_POST['listing_ids']) ? $_POST['listing_ids'] : array();
+        $action = isset($_POST['action_type']) ? sanitize_text_field($_POST['action_type']) : 'trash';
+        
+        if (empty($listing_ids) || !is_array($listing_ids)) {
+            wp_send_json_error(array(
+                'message' => __('No listing IDs provided.', 'as24-sync')
+            ));
+        }
+        
+        // Validate action
+        $allowed_actions = array('trash', 'draft', 'mark', 'delete');
+        if (!in_array($action, $allowed_actions)) {
+            wp_send_json_error(array(
+                'message' => __('Invalid action specified.', 'as24-sync')
+            ));
+        }
+        
+        $result = AS24_Sync_Comparator::handle_orphaned_listings($listing_ids, $action);
+        
+        if ($result['success']) {
+            wp_send_json_success($result);
+        } else {
+            wp_send_json_error($result);
+        }
+    }
+    
+    /**
+     * Import missing listings
+     */
+    public static function ajax_import_missing() {
+        self::verify_request();
+        
+        $listing_ids = isset($_POST['listing_ids']) ? $_POST['listing_ids'] : array();
+        
+        if (empty($listing_ids) || !is_array($listing_ids)) {
+            wp_send_json_error(array(
+                'message' => __('No listing IDs provided.', 'as24-sync')
+            ));
+        }
+        
+        $result = AS24_Sync_Comparator::import_missing_listings($listing_ids);
+        
+        if ($result['success']) {
+            wp_send_json_success($result);
+        } else {
+            wp_send_json_error($result);
         }
     }
 }

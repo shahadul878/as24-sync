@@ -109,7 +109,11 @@ class AS24_Admin {
                 'api_username' => sanitize_text_field($_POST['api_username'] ?? ''),
                 'api_password' => sanitize_text_field($_POST['api_password'] ?? ''),
                 'auto_import' => isset($_POST['auto_import']) ? true : false,
-                'import_frequency' => sanitize_text_field($_POST['import_frequency'] ?? 'daily')
+                'import_frequency' => sanitize_text_field($_POST['import_frequency'] ?? 'daily'),
+                'auto_delete_orphaned' => isset($_POST['auto_delete_orphaned']) ? true : false,
+                'orphaned_action' => sanitize_text_field($_POST['orphaned_action'] ?? 'trash'),
+                'auto_import_missing' => isset($_POST['auto_import_missing']) ? true : false,
+                'run_comparison_on_complete' => isset($_POST['run_comparison_on_complete']) ? true : false
             );
             
             update_option('as24_sync_settings', $settings);

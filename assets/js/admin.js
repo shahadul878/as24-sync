@@ -8,6 +8,7 @@
         isRequestInProgress: false,
         lastRequestTime: 0,
         REQUEST_THROTTLE_MS: 2000, // Minimum 2 seconds between requests
+        currentComparison: null, // Store current comparison results
         
         init: function() {
             this.bindEvents();
@@ -51,10 +52,15 @@
             $('#as24-refresh-logs').on('click', this.refreshAllLogs.bind(this));
             
             // Add refresh status button (fragments style - manual check)
-            // Check if button exists, if not we'll add it via PHP
             $('#as24-refresh-status').on('click', function() {
                 AS24Sync.refreshImportStatus();
             });
+            
+            // Sync comparison handlers
+            $('#as24-compare-listings').on('click', this.compareListings.bind(this));
+            $('#as24-refresh-comparison').on('click', this.refreshComparison.bind(this));
+            $('#as24-handle-orphaned').on('click', this.handleOrphaned.bind(this));
+            $('#as24-import-missing').on('click', this.importMissing.bind(this));
             
             // Clear logs
             $('#as24-clear-logs').on('click', this.clearLogs.bind(this));
@@ -565,6 +571,225 @@
             });
             
             $tbody.html(html);
+        },
+        
+        compareListings: function() {
+            const $btn = $('#as24-compare-listings');
+            const $loading = $('#as24-comparison-loading');
+            const $results = $('#as24-comparison-results');
+            const originalText = $btn.html();
+            
+            $btn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Comparing...');
+            $loading.show();
+            $results.hide();
+            
+            $.ajax({
+                url: as24Sync.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'as24_compare_listings',
+                    nonce: as24Sync.nonce
+                },
+                timeout: 300000, // 5 minutes timeout
+                success: function(response) {
+                    if (response.success) {
+                        AS24Sync.showMessage('success', response.data.message || 'Comparison completed successfully');
+                        AS24Sync.displayComparisonResults(response.data.comparison);
+                        $results.show();
+                        $('#as24-refresh-comparison').show();
+                    } else {
+                        AS24Sync.showMessage('error', response.data.message || 'Failed to compare listings');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    let errorMsg = 'Failed to compare listings';
+                    if (status === 'timeout') {
+                        errorMsg = 'Comparison timed out. This may take a while for large datasets.';
+                    }
+                    AS24Sync.showMessage('error', errorMsg);
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html(originalText);
+                    $loading.hide();
+                }
+            });
+        },
+        
+        refreshComparison: function() {
+            $.ajax({
+                url: as24Sync.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'as24_get_sync_analysis',
+                    nonce: as24Sync.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        AS24Sync.displayComparisonResults(response.data.comparison);
+                    } else {
+                        AS24Sync.showMessage('error', response.data.message || 'No comparison data available');
+                    }
+                },
+                error: function() {
+                    AS24Sync.showMessage('error', 'Failed to refresh comparison');
+                }
+            });
+        },
+        
+        displayComparisonResults: function(comparison) {
+            if (!comparison) {
+                return;
+            }
+            
+            // Update counts
+            $('#as24-orphaned-count').text(comparison.orphaned_count || 0);
+            $('#as24-missing-count').text(comparison.missing_count || 0);
+            $('#as24-synced-count').text(comparison.synced_count || 0);
+            
+            // Store comparison data for actions
+            AS24Sync.currentComparison = comparison;
+            
+            // Update button states
+            $('#as24-handle-orphaned').prop('disabled', comparison.orphaned_count === 0);
+            $('#as24-import-missing').prop('disabled', comparison.missing_count === 0);
+            
+            // Display details
+            let detailsHtml = '<div class="as24-comparison-summary">';
+            detailsHtml += '<p><strong>' + (comparison.local_count || 0) + '</strong> local listings, ';
+            detailsHtml += '<strong>' + (comparison.remote_count || 0) + '</strong> remote listings</p>';
+            detailsHtml += '</div>';
+            
+            if (comparison.orphaned_count > 0) {
+                detailsHtml += '<div class="as24-orphaned-list"><h4>Orphaned Local Listings (' + comparison.orphaned_count + '):</h4><ul>';
+                let count = 0;
+                for (let id in comparison.orphaned_local) {
+                    if (count >= 10) {
+                        detailsHtml += '<li>... and ' + (comparison.orphaned_count - 10) + ' more</li>';
+                        break;
+                    }
+                    const item = comparison.orphaned_local[id];
+                    detailsHtml += '<li>ID: <code>' + id + '</code> (Post ID: ' + (item.post_id || 'N/A') + ')</li>';
+                    count++;
+                }
+                detailsHtml += '</ul></div>';
+            }
+            
+            if (comparison.missing_count > 0) {
+                detailsHtml += '<div class="as24-missing-list"><h4>Missing Remote Listings (' + comparison.missing_count + '):</h4><ul>';
+                let count = 0;
+                comparison.missing_remote.forEach(function(id) {
+                    if (count >= 10) {
+                        detailsHtml += '<li>... and ' + (comparison.missing_count - 10) + ' more</li>';
+                        return false;
+                    }
+                    detailsHtml += '<li>ID: <code>' + id + '</code></li>';
+                    count++;
+                });
+                detailsHtml += '</ul></div>';
+            }
+            
+            $('#as24-comparison-details').html(detailsHtml);
+        },
+        
+        handleOrphaned: function() {
+            if (!AS24Sync.currentComparison || AS24Sync.currentComparison.orphaned_count === 0) {
+                AS24Sync.showMessage('error', 'No orphaned listings to handle');
+                return;
+            }
+            
+            const action = $('#as24-orphaned-action').val();
+            const actionNames = {
+                'trash': 'move to trash',
+                'draft': 'change to draft',
+                'mark': 'mark as orphaned',
+                'delete': 'delete permanently'
+            };
+            
+            if (!confirm('Are you sure you want to ' + (actionNames[action] || action) + ' ' + 
+                AS24Sync.currentComparison.orphaned_count + ' orphaned listing(s)?')) {
+                return;
+            }
+            
+            const $btn = $('#as24-handle-orphaned');
+            const originalText = $btn.html();
+            $btn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Processing...');
+            
+            // Get all orphaned listing IDs
+            const listingIds = Object.keys(AS24Sync.currentComparison.orphaned_local);
+            
+            $.ajax({
+                url: as24Sync.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'as24_handle_orphaned',
+                    nonce: as24Sync.nonce,
+                    listing_ids: listingIds,
+                    action_type: action
+                },
+                success: function(response) {
+                    if (response.success) {
+                        AS24Sync.showMessage('success', response.data.message || 'Orphaned listings processed successfully');
+                        // Refresh comparison
+                        AS24Sync.refreshComparison();
+                        // Refresh import status
+                        AS24Sync.refreshImportStatus();
+                    } else {
+                        AS24Sync.showMessage('error', response.data.message || 'Failed to handle orphaned listings');
+                    }
+                },
+                error: function() {
+                    AS24Sync.showMessage('error', 'Failed to handle orphaned listings');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html(originalText);
+                }
+            });
+        },
+        
+        importMissing: function() {
+            if (!AS24Sync.currentComparison || AS24Sync.currentComparison.missing_count === 0) {
+                AS24Sync.showMessage('error', 'No missing listings to import');
+                return;
+            }
+            
+            if (!confirm('Are you sure you want to import ' + 
+                AS24Sync.currentComparison.missing_count + ' missing listing(s)?')) {
+                return;
+            }
+            
+            const $btn = $('#as24-import-missing');
+            const originalText = $btn.html();
+            $btn.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Importing...');
+            
+            // Get all missing listing IDs
+            const listingIds = AS24Sync.currentComparison.missing_remote;
+            
+            $.ajax({
+                url: as24Sync.ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'as24_import_missing',
+                    nonce: as24Sync.nonce,
+                    listing_ids: listingIds
+                },
+                success: function(response) {
+                    if (response.success) {
+                        AS24Sync.showMessage('success', response.data.message || 'Missing listings imported successfully');
+                        // Refresh comparison
+                        AS24Sync.refreshComparison();
+                        // Refresh import status
+                        AS24Sync.refreshImportStatus();
+                    } else {
+                        AS24Sync.showMessage('error', response.data.message || 'Failed to import missing listings');
+                    }
+                },
+                error: function() {
+                    AS24Sync.showMessage('error', 'Failed to import missing listings');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).html(originalText);
+                }
+            });
         },
         
         clearLogs: function() {

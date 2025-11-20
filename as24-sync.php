@@ -39,6 +39,7 @@ require_once AS24_SYNC_PATH . 'includes/class-import-orchestrator.php';
 require_once AS24_SYNC_PATH . 'includes/class-progress-tracker.php';
 require_once AS24_SYNC_PATH . 'includes/class-sync-history.php';
 require_once AS24_SYNC_PATH . 'includes/class-listing-logs.php';
+require_once AS24_SYNC_PATH . 'includes/class-sync-comparator.php';
 
 // Admin includes
 if (is_admin()) {
@@ -142,6 +143,10 @@ class AS24_Sync {
             'api_password' => '',
             'auto_import' => false,
             'import_frequency' => 'daily',
+            'auto_delete_orphaned' => false,
+            'orphaned_action' => 'trash',
+            'auto_import_missing' => false,
+            'run_comparison_on_complete' => false,
             'version' => AS24_SYNC_VERSION,
             'installed_at' => current_time('mysql')
         );
@@ -319,6 +324,38 @@ class AS24_Sync {
 function as24_sync() {
     return AS24_Sync::instance();
 }
+
+
+/**
+ * Register the widget with Elementor
+ */
+function autoscout24_register_elementor_widget() {
+	// Only proceed if Elementor is loaded
+	if (!class_exists('\Elementor\Plugin')) {
+		return;
+	}
+
+	// Include the widget file
+	require_once AS24_IMPORTER_PLUGIN_PATH . 'includes/elementor/price-details-widget.php';
+
+	// Register the widget
+	\Elementor\Plugin::instance()->widgets_manager->register(new AS24_Elementor_Widget_Price_Details());
+}
+
+// Register the widget category
+function autoscout24_register_elementor_category($elements_manager) {
+	$elements_manager->add_category(
+		'autoscout24',
+		array(
+			'title' => __('AutoScout24', 'autoscout24-importer'),
+			'icon'  => 'fa fa-car',
+		)
+	);
+}
+add_action('elementor/elements/categories_registered', 'autoscout24_register_elementor_category');
+
+// Hook into Elementor's widgets_registered action
+add_action('elementor/widgets/widgets_registered', 'autoscout24_register_elementor_widget');
 
 // Initialize plugin
 as24_sync();

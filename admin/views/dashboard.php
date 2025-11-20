@@ -55,6 +55,66 @@ $sync_history = AS24_Sync_History::get_records(array('limit' => 20));
             </div>
         </div>
         
+        <!-- Sync Comparison Section -->
+        <div class="as24-sync-comparison-section">
+            <h2><?php _e('Sync Analysis', 'as24-sync'); ?></h2>
+            <div class="as24-comparison-controls">
+                <button type="button" id="as24-compare-listings" class="button button-primary">
+                    <span class="dashicons dashicons-search"></span>
+                    <?php _e('Compare Listings', 'as24-sync'); ?>
+                </button>
+                <button type="button" id="as24-refresh-comparison" class="button button-secondary" style="display: none;">
+                    <span class="dashicons dashicons-update"></span>
+                    <?php _e('Refresh Analysis', 'as24-sync'); ?>
+                </button>
+            </div>
+            <div id="as24-comparison-results" class="as24-comparison-results" style="display: none;">
+                <div class="as24-comparison-stats">
+                    <div class="as24-comparison-stat">
+                        <span class="as24-comparison-label"><?php _e('Orphaned Local:', 'as24-sync'); ?></span>
+                        <span class="as24-comparison-value as24-orphaned-count" id="as24-orphaned-count">0</span>
+                    </div>
+                    <div class="as24-comparison-stat">
+                        <span class="as24-comparison-label"><?php _e('Missing Remote:', 'as24-sync'); ?></span>
+                        <span class="as24-comparison-value as24-missing-count" id="as24-missing-count">0</span>
+                    </div>
+                    <div class="as24-comparison-stat">
+                        <span class="as24-comparison-label"><?php _e('Synced:', 'as24-sync'); ?></span>
+                        <span class="as24-comparison-value as24-synced-count" id="as24-synced-count">0</span>
+                    </div>
+                </div>
+                <div class="as24-comparison-actions">
+                    <div class="as24-orphaned-actions">
+                        <h3><?php _e('Orphaned Local Listings', 'as24-sync'); ?></h3>
+                        <p class="description"><?php _e('Listings that exist locally but not in remote (AutoScout24)', 'as24-sync'); ?></p>
+                        <select id="as24-orphaned-action" class="as24-action-select">
+                            <option value="trash"><?php _e('Move to Trash', 'as24-sync'); ?></option>
+                            <option value="draft"><?php _e('Change to Draft', 'as24-sync'); ?></option>
+                            <option value="mark"><?php _e('Mark as Orphaned', 'as24-sync'); ?></option>
+                            <option value="delete"><?php _e('Delete Permanently', 'as24-sync'); ?></option>
+                        </select>
+                        <button type="button" id="as24-handle-orphaned" class="button button-secondary">
+                            <span class="dashicons dashicons-trash"></span>
+                            <?php _e('Handle Orphaned', 'as24-sync'); ?>
+                        </button>
+                    </div>
+                    <div class="as24-missing-actions">
+                        <h3><?php _e('Missing Remote Listings', 'as24-sync'); ?></h3>
+                        <p class="description"><?php _e('Listings that exist in remote but not locally', 'as24-sync'); ?></p>
+                        <button type="button" id="as24-import-missing" class="button button-primary">
+                            <span class="dashicons dashicons-download"></span>
+                            <?php _e('Import Missing', 'as24-sync'); ?>
+                        </button>
+                    </div>
+                </div>
+                <div id="as24-comparison-details" class="as24-comparison-details"></div>
+            </div>
+            <div id="as24-comparison-loading" class="as24-comparison-loading" style="display: none;">
+                <span class="dashicons dashicons-update spin"></span>
+                <?php _e('Comparing listings... This may take a few moments.', 'as24-sync'); ?>
+            </div>
+        </div>
+        
         <!-- Progress Display -->
         <div class="as24-progress-section">
             <h2><?php _e('Import Progress', 'as24-sync'); ?></h2>
